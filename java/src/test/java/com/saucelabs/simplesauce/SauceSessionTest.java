@@ -13,7 +13,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class SauceSessionTest {
     private SauceSession sauce;
@@ -172,5 +177,37 @@ public class SauceSessionTest {
         sauce.stop();
 
         verify(dummyJSExecutor, never()).executeScript(anyString());
+    }
+
+    @Test
+    public void updateResultWithBooleanTrue() {
+        doReturn(dummyJSExecutor).when(sauce).getJSExecutor();
+        sauce.start();
+        sauce.updateResult(true);
+        verify(dummyJSExecutor).executeScript("sauce:job-result=passed");
+    }
+
+    @Test
+    public void updateResultWithBooleanFalse() {
+        doReturn(dummyJSExecutor).when(sauce).getJSExecutor();
+        sauce.start();
+        sauce.updateResult(false);
+        verify(dummyJSExecutor).executeScript("sauce:job-result=failed");
+    }
+
+    @Test
+    public void updateResultWithStringPassed() {
+        doReturn(dummyJSExecutor).when(sauce).getJSExecutor();
+        sauce.start();
+        sauce.updateResult(true);
+        verify(dummyJSExecutor).executeScript("sauce:job-result=passed");
+    }
+
+    @Test
+    public void updateResultWithStringFailed() {
+        doReturn(dummyJSExecutor).when(sauce).getJSExecutor();
+        sauce.start();
+        sauce.updateResult(false);
+        verify(dummyJSExecutor).executeScript("sauce:job-result=failed");
     }
 }

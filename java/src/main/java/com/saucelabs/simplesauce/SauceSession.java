@@ -122,6 +122,7 @@ public class SauceSession {
         return (JavascriptExecutor) driver;
     }
 
+    // Deprecate this as public method once implement TestWatcher for JUnit
     public void stop() {
         if(driver !=null) {
             driver.quit();
@@ -129,13 +130,24 @@ public class SauceSession {
     }
 
     public void stop(String result) {
-        getJSExecutor().executeScript("sauce:job-result=" + result);
+        updateResult(result);
         stop();
     }
 
     public void stop(Boolean passed) {
+        updateResult(passed);
+        stop();
+    }
+
+    // Deprecate this as public method once implement TestWatcher for JUnit
+    public void updateResult(boolean passed) {
         String result = passed ? "passed" : "failed";
-        stop(result);
+        updateResult(result);
+    }
+
+    // Deprecate this as public method once implement TestWatcher for JUnit
+    public void updateResult(String result) {
+        getJSExecutor().executeScript("sauce:job-result=" + result);
     }
 
     protected String getEnvironmentVariable(String key) {
