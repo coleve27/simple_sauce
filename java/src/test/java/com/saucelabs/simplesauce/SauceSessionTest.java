@@ -7,6 +7,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -14,7 +15,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class SauceSessionTest {
     private SauceSession sauceSession = spy(new SauceSession());
@@ -26,7 +36,7 @@ public class SauceSessionTest {
 
     @Before
     public void setUp() {
-        doReturn(dummyRemoteDriver).when(sauceSession).createRemoteWebDriver();
+        doReturn(dummyRemoteDriver).when(sauceSession).createRemoteWebDriver(any(URL.class), any(MutableCapabilities.class));
     }
 
     @Test
@@ -43,13 +53,14 @@ public class SauceSessionTest {
     @Test
     public void sauceSessionUsesProvidedSauceOptions() {
         SauceOptions sauceOptions = spy(new SauceOptions());
+        MutableCapabilities caps = sauceOptions.toCapabilities();
 
         sauceSession = spy(new SauceSession(sauceOptions));
-        doReturn(dummyRemoteDriver).when(sauceSession).createRemoteWebDriver();
+        doReturn(dummyRemoteDriver).when(sauceSession).createRemoteWebDriver(anyObject(), eq(caps));
 
         sauceSession.start();
 
-        verify(sauceOptions).toCapabilities();
+        verify(sauceOptions, times(2)).toCapabilities();
     }
 
     @Test

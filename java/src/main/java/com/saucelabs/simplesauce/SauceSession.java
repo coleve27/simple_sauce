@@ -30,9 +30,7 @@ public class SauceSession {
     }
 
     public RemoteWebDriver start() {
-        sauceUrl = getSauceUrl();
-        currentSessionCapabilities = sauceOptions.toCapabilities();
-        driver = createRemoteWebDriver();
+        driver = createRemoteWebDriver(getSauceUrl(), sauceOptions.toCapabilities());
         return driver;
 	}
 
@@ -49,8 +47,8 @@ public class SauceSession {
         }
     }
 
-    protected RemoteWebDriver createRemoteWebDriver() {
-        return new RemoteWebDriver(sauceUrl, currentSessionCapabilities);
+    protected RemoteWebDriver createRemoteWebDriver(URL url, MutableCapabilities capabilities) {
+        return new RemoteWebDriver(url, capabilities);
     }
 
     protected JavascriptExecutor getJSExecutor() {

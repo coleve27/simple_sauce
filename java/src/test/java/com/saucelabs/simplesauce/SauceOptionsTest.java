@@ -6,6 +6,8 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.BrowserType;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -85,8 +87,30 @@ public class SauceOptionsTest extends BaseConfigurationTest{
         assertEquals("TEMP BUILD: 11", sauceOptions.getBuild());
     }
 
+    // TODO: This needs to get fleshed out a lot more
     @Test
-    @Ignore("Not Implemented Yet")
     public void parsesW3CAndSauceAndSeleniumSettings() {
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.addArguments("--foo");
+        firefoxOptions.addPreference("foo", "bar");
+        firefoxOptions.setUnhandledPromptBehaviour(DISMISS);
+
+        sauceOptions = new SauceOptions(firefoxOptions);
+
+        sauceOptions.setBrowserName(BrowserType.FIREFOX);
+        sauceOptions.setPlatformName(Platforms.MAC_OS_HIGH_SIERRA.getOsVersion());
+        sauceOptions.setBrowserVersion("68");
+
+        MutableCapabilities expectedCaps = new MutableCapabilities();
+        expectedCaps.setCapability("acceptInsecureCerts", true);
+        expectedCaps.setCapability("browserName", "firefox");
+        expectedCaps.setCapability("browserVersion", "68");
+        expectedCaps.setCapability("platformName", "macOS 10.13");
+        expectedCaps.setCapability("unhandledPromptBehavior", DISMISS);
+        expectedCaps.setCapability("sauce:options", new HashMap<>());
+        expectedCaps.setCapability("moz:firefoxOptions", firefoxOptions.toJson().get("moz:firefoxOptions"));
+
+        MutableCapabilities actualCaps = sauceOptions.toCapabilities();
+        assertEquals(expectedCaps, actualCaps);
     }
 }
